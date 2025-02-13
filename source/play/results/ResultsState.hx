@@ -9,6 +9,9 @@ import play.components.Stats;
 
 class ResultsState extends MusicState
 {
+	/**
+	 * Stats of the song that was played
+	 */
 	public var STATS:Stats = {
 		song: "Test",
 		beatsTotal: 100,
@@ -16,105 +19,110 @@ class ResultsState extends MusicState
 		beatsMissed: 50
 	};
 
-	public var rank:String = 'perfect';
+	/**
+	 * The rank class storing the rank
+	 */
+	public var RANK_CLASS:Rank;
 
-	public var percent:Float = 0.0;
-	public var targpercent:Float = 100.0;
-	public var reachedTarget:Bool = false;
-	public var percentTick:Float = 0.0;
-	public var percentTickGoal:Float = 5.0;
+	/**
+	 * Current percentage
+	 */
+	public var PERCENT:Float = 0.0;
 
-	public var rankText:FlxText;
-	public var ranksubText:FlxText;
-	public var percentText:FlxText;
+	/**
+	 * The percent earned
+	 */
+	public var TARGET_PERCENT:Null<Float> = 100.0;
+
+	/**
+	 * This is if we have arrived at the `TARGET_PERCENT` TARGET
+	 */
+	public var REACHED_TARGET_PERCENT:Bool = false;
+
+	/**
+	 * The current tick increment until `PERCENT_TICK_GOAL`
+	 */
+	public var PERCENT_TICK:Int = 0;
+
+	/**
+	 * The `PERCENT_TICK` when `PERCENT` should increase closer to `TARGET_PERCENT`
+	 */
+	public var PERCENT_TICK_GOAL:Int = 5;
+
+	/**
+	 * This is the text that will say your grade, i.e. "YOU DID GOOD"
+	 */
+	public var RANK_GRADE_TEXT:FlxText;
+
+	/**
+	 * This is the text that will say your percentage while being below the `RANK_GRADE_TEXT`
+	 */
+	public var RANK_PERCENT_TEXT:FlxText;
 
 	override public function new(gameplayStats:Stats)
 	{
-		trace(gameplayStats);
+		TARGET_PERCENT = (gameplayStats.beatsHit / gameplayStats.beatsTotal) * 100;
+		RANK_CLASS = new Rank((TARGET_PERCENT == null) ? 0 : TARGET_PERCENT);
 
-		targpercent = (gameplayStats.beatsHit / gameplayStats.beatsTotal) * 100;
-		rankInit();
-        
-		rankText = new FlxText(10, 10, 0, "YOU DID...", 64);
+		RANK_GRADE_TEXT = new FlxText(10, 10, 0, 'YOU DID...', 64);
 
-		ranksubText = new FlxText(10, rankText.y + rankText.height + 8, 0, "0%", 24);
-		ranksubText.visible = false;
-		ranksubText.color = FlxColor.GRAY;
+		RANK_PERCENT_TEXT = new FlxText(0, 0, 0, '0%', 32);
+		RANK_PERCENT_TEXT.screenCenter(XY);
 
-		percentText = new FlxText(0, 0, 0, "0%", 32);
-		percentText.screenCenter(XY);
-
-		trace('ResultsState inited!');
 		super();
-	}
-
-	public function rankInit()
-	{
-		trace(targpercent + '%');
-
-		if (targpercent == 100)
-			rank = 'perfect';
-		else if (targpercent >= 90)
-			rank = 'excellent';
-		else if (targpercent >= 80)
-			rank = 'great';
-		else if (targpercent >= 60)
-			rank = 'good';
-		else if (targpercent >= 10)
-			rank = 'bad';
-		else
-			rank = 'awful';
 	}
 
 	override public function create()
 	{
-		add(rankText);
-		add(ranksubText);
-		add(percentText);
+		add(RANK_GRADE_TEXT);
+		add(RANK_PERCENT_TEXT);
 
 		super.create();
 	}
 
 	override public function update(elapsed:Float)
 	{
-		if (percent < targpercent)
+		if (PERCENT < TARGET_PERCENT)
 		{
-			if (percentTick == percentTickGoal)
-			{
-				percentTick = 0;
-
-				if (percent == 0)
-					percent++;
-				else
-					percent += (percent / targpercent) * 50;
-			}
-
-			if (percent > targpercent)
-				percent = targpercent;
-
-			percentText.text = '${FlxMath.roundDecimal(percent, 0)}%';
-			percentText.screenCenter(XY);
+			rankBuildUpTick();
 		}
-		else
+		else if (PERCENT_TICK == PERCENT_TICK_GOAL * 2)
 		{
-			if (percentTick == percentTickGoal * 2)
-			{
-				if (!reachedTarget)
-					trace('Rank Target Made!');
-
-				FlxG.camera.flash();
-
-				rankText.text = "YOU DID " + rank.toUpperCase() + "!";
-				percentText.visible = false;
-				ranksubText.text = percentText.text;
-				ranksubText.visible = true;
-
-				reachedTarget = true;
-			}
+			rankBuildUpComplete();
 		}
 
-		percentTick += 1;
+		PERCENT_TICK++;
 
 		super.update(elapsed);
+	}
+
+	public function rankBuildUpTick()
+	{
+		if (PERCENT_TICK == PERCENT_TICK_GOAL)
+		{
+			PERCENT_TICK = 0;
+			PERCENT += (PERCENT < 1) ? 1 : (PERCENT / TARGET_PERCENT) * 50;
+		}
+
+		if (PERCENT > TARGET_PERCENT) PERCENT = TARGET_PERCENT;
+
+		RANK_PERCENT_TEXT.text = '${FlxMath.roundDecimal(PERCENT, 0)}%';
+		RANK_PERCENT_TEXT.screenCenter(XY);
+	}
+
+	/**
+	 * This executes once `PERCENT < TARGET_PERCENT` and `PERCENT_TICK == PERCENT_TICK_GOAL * 2`
+	 */
+	public function rankBuildUpComplete()
+	{
+		if (!REACHED_TARGET_PERCENT) trace('Rank Target Made!'); else return;
+
+		FlxG.camera.flash();
+
+		RANK_GRADE_TEXT.text = 'YOU DID ${RANK_CLASS.RANK.toUpperCase()}!';
+                RANK_PERCENT_TEXT.setPosition(10, RANK_GRADE_TEXT.y + RANK_GRADE_TEXT.height + 8);
+                RANK_PERCENT_TEXT.color = FlxColor.GRAY;
+
+		REACHED_TARGET_PERCENT = true;
 	}
 }
