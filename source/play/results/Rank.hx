@@ -33,6 +33,5 @@ class Rank
 		if (percent >= 10) return 'bad';
 
                 return 'awful';
-        }
-        
+	}
 }
