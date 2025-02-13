@@ -7,6 +7,9 @@ import flixel.util.FlxColor;
 import music.MusicState;
 import play.components.Stats;
 
+/**
+ * Results State
+ */
 class ResultsState extends MusicState
 {
 	/**
@@ -72,7 +75,7 @@ class ResultsState extends MusicState
 		super();
 	}
 
-	override public function create()
+	override public function create():Void
 	{
 		add(RANK_GRADE_TEXT);
 		add(RANK_PERCENT_TEXT);
@@ -80,7 +83,7 @@ class ResultsState extends MusicState
 		super.create();
 	}
 
-	override public function update(elapsed:Float)
+	override public function update(elapsed:Float):Void
 	{
 		if (PERCENT < TARGET_PERCENT)
 		{
@@ -96,7 +99,10 @@ class ResultsState extends MusicState
 		super.update(elapsed);
 	}
 
-	public function rankBuildUpTick()
+	/**
+	 * This executes when `PERCENT < TARGET_PERCENT` is true
+	 */
+	public function rankBuildUpTick():Void
 	{
 		if (PERCENT_TICK == PERCENT_TICK_GOAL)
 		{
@@ -111,9 +117,9 @@ class ResultsState extends MusicState
 	}
 
 	/**
-	 * This executes once `PERCENT < TARGET_PERCENT` and `PERCENT_TICK == PERCENT_TICK_GOAL * 2`
+	 * This executes once `PERCENT < TARGET_PERCENT` isn't true and `PERCENT_TICK == PERCENT_TICK_GOAL * 2`
 	 */
-	public function rankBuildUpComplete()
+	public function rankBuildUpComplete():Void
 	{
 		if (!REACHED_TARGET_PERCENT) trace('Rank Target Made!'); else return;
 

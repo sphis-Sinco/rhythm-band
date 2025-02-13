@@ -1,5 +1,8 @@
 package play.components;
 
+/**
+ * Song/Gameplay Stats
+ */
 typedef Stats =
 {
 	var song:String;

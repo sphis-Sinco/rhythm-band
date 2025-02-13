@@ -9,12 +9,16 @@ import music.Song;
 import play.components.Stats;
 import play.results.ResultsState;
 
+/**
+ * Gameplay state
+ */
 class PlayState extends MusicState
 {
 	/**
 	 * This is the song json file controlling all the song info, notes, bpm, song name, etc.
 	 */
 	public var SONG_JSON:Song;
+
 	/**
 	 * This is the stats for the song, this gets changed during gameplay.
 	 */
@@ -62,17 +66,17 @@ class PlayState extends MusicState
 		super();
 	}
 
-	override public function create()
+	override public function create():Void
 	{
 		add(SONG_POSITION_DEBUG_TEXT);
-		
+
 		super.create();
 	}
 
-	override public function update(elapsed:Float)
+	override public function update(elapsed:Float):Void
 	{
 		songProgress(elapsed);
-		
+
 		super.update(elapsed);
 	}
 
@@ -80,10 +84,9 @@ class PlayState extends MusicState
 	 * This executes when the song needs to update
 	 * @param elapsed this should just be set to `update`'s `elapsed` variable
 	 */
-	public function songProgress(elapsed:Float)
-        {
-		if (!SONG_ENDED)
-			Conductor.songPosition += elapsed * 1000;
+	public function songProgress(elapsed:Float):Void
+	{
+		if (!SONG_ENDED) Conductor.songPosition += elapsed * 1000;
 
 		if (Conductor.songPosition > 0 && !SONG_STARTED)
 		{
@@ -94,27 +97,26 @@ class PlayState extends MusicState
 		var MUSIC_LENGTH_SECONDS:Float = FlxG.sound.music.length / 1000;
 		var TIME_LEFT_SECONDS:Float = FlxMath.roundDecimal(MUSIC_LENGTH_SECONDS - Conductor.songPosition / 1000, 0);
 
-		if (TIME_LEFT_SECONDS > MUSIC_LENGTH_SECONDS)
-			TIME_LEFT_SECONDS = MUSIC_LENGTH_SECONDS; // countdown time doesnt add to the length
+		if (TIME_LEFT_SECONDS > MUSIC_LENGTH_SECONDS) TIME_LEFT_SECONDS = MUSIC_LENGTH_SECONDS; // countdown time doesnt add to the length
 
 		SONG_POSITION_DEBUG_TEXT.text = 'Song Pos: $TIME_LEFT_SECONDS';
-        }
+	}
 
 	/**
 	 * This executes when the song ends and should only end when the song ends
 	 */
-	public function endSong()
+	public function endSong():Void
 	{
 		SONG_ENDED = true;
 		FlxG.switchState(() -> new ResultsState(SONG_STATS));
 	}
 
-	override public function stepHit()
+	override public function stepHit():Void
 	{
 		super.stepHit();
 	}
 
-	override public function beatHit()
+	override public function beatHit():Void
 	{
 		super.beatHit();
 	}

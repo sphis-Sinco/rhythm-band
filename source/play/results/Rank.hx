@@ -1,5 +1,8 @@
 package play.results;
 
+/**
+ * Rank Manager Class
+ */
 class Rank
 {
 
@@ -19,8 +22,9 @@ class Rank
         /**
          * Returns a rank depending on the `percent`.
          * @param percent Rank percentage
+	 * @return String
          */
-        public function grade(percent:Float = 0.0)
+	public function grade(percent:Float = 0.0):String
         {
                 if (percent == 100) return 'perfect';
 		if (percent >= 90) return 'excellent';

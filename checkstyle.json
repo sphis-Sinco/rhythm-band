@@ -242,40 +242,10 @@
     },
     {
       "props": {
-        "ignoreExtern": true,
-        "format": "^[a-z][a-zA-Z0-9]*$",
-        "tokens": []
-      },
-      "type": "LocalVariableName"
-    },
-    {
-      "props": {
         "ignoreNumbers": [-1, 0, 1, 2],
         "severity": "IGNORE"
       },
       "type": "MagicNumber"
-    },
-    {
-      "props": {
-        "format": "^[A-Z][a-zA-Z0-9]*$",
-        "tokens": ["ABSTRACT"]
-      },
-      "type": "MemberName"
-    },
-    {
-      "props": {
-        "format": "^[_a-zA-Z][a-z][a-zA-Z0-9]*$",
-        "tokens": ["ABSTRACT"]
-      },
-      "type": "MemberName"
-    },
-    {
-      "props": {
-        "ignoreExtern": true,
-        "format": "^[_a-z][a-zA-Z0-9]*$",
-        "tokens": ["PUBLIC", "PRIVATE", "CLASS", "TYPEDEF"]
-      },
-      "type": "MemberName"
     },
     {
       "props": {
@@ -577,10 +547,6 @@
         "tokens": []
       },
       "type": "TypeName"
-    },
-    {
-      "props": {},
-      "type": "UnnecessaryConstructor"
     },
     {
       "props": {
