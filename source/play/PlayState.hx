@@ -88,7 +88,7 @@ class PlayState extends MusicState
 	{
 		trace('we done');
 		endedSong = true;
-		FlxG.switchState(new ResultsState(SONG_STATS));
+		FlxG.switchState(() -> new ResultsState(SONG_STATS));
 	}
 
 	override public function stepHit()
