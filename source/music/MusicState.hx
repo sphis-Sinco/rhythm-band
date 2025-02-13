@@ -1,18 +1,20 @@
 package music;
 
 import flixel.addons.transition.FlxTransitionableState;
-import flixel.addons.transition.TransitionData;
 import flixel.addons.ui.FlxUIState;
 import music.Conductor.BPMChangeEvent;
 
+/**
+ * The main music state: has all the beat stuff
+ */
 class MusicState extends FlxUIState
 {
 	// thankyouninjamuffin99
-	private var oldBeat:Float = 0;
-	private var oldStep:Float = 0;
+	var oldBeat:Float = 0;
+	var oldStep:Float = 0;
 
-	private var curStep:Int = 0;
-	private var curBeat:Int = 0;
+	var curStep:Int = 0;
+	var curBeat:Int = 0;
 
 	override public function new()
 	{
@@ -22,13 +24,12 @@ class MusicState extends FlxUIState
 		super();
 	}
 
-	override public function create()
+	override public function create():Void
 	{
-
 		super.create();
 	}
 
-	override public function update(elapsed:Float)
+	override public function update(elapsed:Float):Void
 	{
 		oldStep = curStep;
 
@@ -36,17 +37,19 @@ class MusicState extends FlxUIState
 		updateBeat();
 
 		if (oldStep != curStep && curStep > 0)
+		{
 			stepHit();
-        
+		}
+
 		super.update(elapsed);
 	}
 
-	private function updateBeat():Void
+	function updateBeat():Void
 	{
 		curBeat = Math.floor(curStep / 4);
 	}
 
-	private function updateCurStep():Void
+	function updateCurStep():Void
 	{
 		var lastChange:BPMChangeEvent = {
 			stepTime: 0,
@@ -56,18 +59,28 @@ class MusicState extends FlxUIState
 		for (i in 0...Conductor.bpmChangeMap.length)
 		{
 			if (Conductor.songPosition >= Conductor.bpmChangeMap[i].songTime)
+			{
 				lastChange = Conductor.bpmChangeMap[i];
+			}
 		}
 
 		curStep = lastChange.stepTime + Math.floor((Conductor.songPosition - lastChange.songTime) / Conductor.stepCrochet);
 	}
 
+	/**
+	 * This is when the step increases: runs `beatHit` when `curStep % 4 == 0`
+	 */
 	public function stepHit():Void
 	{
 		if (curStep % 4 == 0)
+		{
 			beatHit();
+		}
 	}
 
+	/**
+	 * This is when the beat increases
+	 */
 	public function beatHit():Void
 	{
 		// do literally nothing dumbass
