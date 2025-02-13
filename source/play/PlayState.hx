@@ -1,8 +1,6 @@
 package play;
 
 import flixel.FlxG;
-import flixel.FlxSprite;
-import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import music.Conductor;
@@ -13,13 +11,29 @@ import play.results.ResultsState;
 
 class PlayState extends MusicState
 {
+	/**
+	 * This is the song json file controlling all the song info, notes, bpm, song name, etc.
+	 */
 	public var SONG_JSON:Song;
+	/**
+	 * This is the stats for the song, this gets changed during gameplay.
+	 */
 	public var SONG_STATS:Stats;
 
-	public var startedSong:Bool = false;
-	public var endedSong:Bool = false;
+	/**
+	 * This is the tracker for if the song has started
+	 */
+	public var SONG_STARTED:Bool = false;
 
-	public var songPos:FlxText;
+	/**
+	 * This is the tracker for if the song has ended
+	 */
+	public var SONG_ENDED:Bool = false;
+
+	/**
+	 * This is a debug text-field for song position
+	 */
+	public var SONG_POSITION_DEBUG_TEXT:FlxText;
 
 	override public function new()
 	{
@@ -42,52 +56,56 @@ class PlayState extends MusicState
 		FlxG.sound.music.onComplete = endSong;
 		FlxG.sound.pause();
 
-		Conductor.songPosition = 0; // -5000 fpr a countdown or smth
+		Conductor.songPosition = 0; // -5000 for a countdown
 
-		songPos = new FlxText(0, 0, 0, "Hello", 16);
+		SONG_POSITION_DEBUG_TEXT = new FlxText(0, 0, 0, "Hello", 16);
 		super();
 	}
 
 	override public function create()
 	{
-		add(songPos);
+		add(SONG_POSITION_DEBUG_TEXT);
 		
 		super.create();
 	}
 
 	override public function update(elapsed:Float)
 	{
-		songStuff(elapsed);
+		songProgress(elapsed);
 		
 		super.update(elapsed);
 	}
 
-        public function songStuff(elapsed:Float)
+	/**
+	 * This executes when the song needs to update
+	 * @param elapsed this should just be set to `update`'s `elapsed` variable
+	 */
+	public function songProgress(elapsed:Float)
         {
-                if (!endedSong)
+		if (!SONG_ENDED)
 			Conductor.songPosition += elapsed * 1000;
 
-		if (Conductor.songPosition > 0 && !startedSong)
+		if (Conductor.songPosition > 0 && !SONG_STARTED)
 		{
-			startedSong = true;
+			SONG_STARTED = true;
 			FlxG.sound.music.resume();
 		}
 
-		var musicLen:Float = FlxG.sound.music.length / 1000;
-		var timeLeft:Float = FlxMath.roundDecimal(musicLen - Conductor.songPosition / 1000, 0);
+		var MUSIC_LENGTH_SECONDS:Float = FlxG.sound.music.length / 1000;
+		var TIME_LEFT_SECONDS:Float = FlxMath.roundDecimal(MUSIC_LENGTH_SECONDS - Conductor.songPosition / 1000, 0);
 
-		if (timeLeft > musicLen)
-			timeLeft = musicLen; // countdown time doesnt add to the length
+		if (TIME_LEFT_SECONDS > MUSIC_LENGTH_SECONDS)
+			TIME_LEFT_SECONDS = MUSIC_LENGTH_SECONDS; // countdown time doesnt add to the length
 
-		var songText:String = '' + timeLeft;
-
-		songPos.text = "Song Pos: " + songText;
+		SONG_POSITION_DEBUG_TEXT.text = 'Song Pos: $TIME_LEFT_SECONDS';
         }
 
+	/**
+	 * This executes when the song ends and should only end when the song ends
+	 */
 	public function endSong()
 	{
-		trace('we done');
-		endedSong = true;
+		SONG_ENDED = true;
 		FlxG.switchState(() -> new ResultsState(SONG_STATS));
 	}
 
