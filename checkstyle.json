@@ -208,21 +208,6 @@
     },
     {
       "props": {
-        "character": "  ",
-        "severity": "IGNORE"
-      },
-      "type": "Indentation"
-    },
-    {
-      "props": {
-        "character": "space",
-        "severity": "INFO",
-        "ignorePattern": "^$"
-      },
-      "type": "IndentationCharacter"
-    },
-    {
-      "props": {
         "ignoreReturnAssignments": true,
         "severity": "WARNING"
       },
